@@ -38,7 +38,9 @@ Dataset yang digunakan mencakup informasi mengenai harga properti di Tangerang S
 
 ### Tahapan untuk memahami data:
 1. **Exploratory Data Analysis (EDA)**: Melakukan analisis untuk memahami distribusi harga, hubungan antar fitur, dan mengecek korelasi antara fitur dan harga rumah.
-![image](https://github.com/user-attachments/assets/6f9d9458-6e06-4089-a928-7f55c99f352b)
+
+
+![image](https://github.com/user-attachments/assets/8318a937-b324-4e39-8024-87cd763eb50f)
 ![image](https://github.com/user-attachments/assets/ea730b6f-85f6-4465-8627-935bc9ae1345)
 
 
