@@ -1,7 +1,3 @@
-Berikut adalah pembaruan laporan berdasarkan hasil evaluasi dari model Linear Regression dan Random Forest Regressor:
-
----
-
 # Laporan Proyek Machine Learning - Abdul Majid
 
 ## Domain Proyek
