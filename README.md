@@ -117,17 +117,21 @@ menampilkann histogram dari perbandingan jumlah kamar mandi dan kamar tidur pada
 
 ![image](https://github.com/user-attachments/assets/691cf294-46f4-42ae-87e8-e4525bcafde1)
 visualisasi tersebut menampilkan perbandingan antara luas tanah dan harga rumah. grafik tersebut menunjukan bahwa semakin luas tanah, semakin tinggi harga rumah
+
+
 ## Data Preparation
 
 Data preparation adalah tahapan penting yang memastikan bahwa data yang digunakan dalam model machine learning sudah bersih, konsisten, dan dalam format yang tepat. Pada proyek ini, tahapan data preparation mencakup beberapa langkah berikut:
 
 ### 1. **Pembersihan Data (Data Cleaning)**:
    - **Menghapus Nilai yang Hilang (Missing Values)**:
-     Dataset ini mengandung beberapa nilai yang hilang pada kolom `bed`, `bath`, dan `listing-floorarea 2`. Untuk mengatasi hal ini, terdapat beberapa pendekatan yang dapat diterapkan:
-     - **Imputasi dengan Rata-rata/Median**: Nilai yang hilang pada kolom numerik (seperti `bed` dan `bath`) dapat diisi dengan rata-rata atau median dari nilai yang ada. Pada kolom `bed` dan `bath`, imputasi dengan median lebih disarankan karena median lebih tahan terhadap pencilan.
-     - **Penghapusan Baris (Row Dropping)**: Baris yang mengandung banyak nilai hilang dapat dihapus jika dianggap tidak terlalu signifikan bagi keseluruhan dataset.
+     Beberapa kolom dalam dataset ini mengandung nilai yang hilang, seperti pada kolom `bed`, `bath`, dan `listing-floorarea 2`. Nilai-nilai yang hilang ini dikelola dengan menghapus baris yang mengandung nilai hilang. Pendekatan ini dipilih karena baris dengan nilai hilang terlalu banyak untuk dilakukan imputasi.
    
-   - **Menghapus Duplikasi (Duplicate Removal)**: Dataset ini mengandung 5,196 baris duplikat. Duplikasi ini dapat mempengaruhi hasil model dan perlu dihapus untuk memastikan bahwa data yang digunakan adalah unik.
+   - **Menghapus Duplikasi (Duplicate Removal)**: 
+     Dataset ini mengandung 5,196 baris duplikat. Duplikasi ini dapat mempengaruhi hasil model dan perlu dihapus untuk memastikan data yang digunakan adalah unik.
+
+   - **Menghapus Kolom yang Tidak Diperlukan**:
+     Beberapa kolom dalam dataset tidak memberikan informasi yang relevan atau tidak akan digunakan dalam analisis. Kolom `nav-link href` dan `listing-location` dihapus karena tidak diperlukan untuk model prediksi harga rumah. Kolom `listing-location` juga dihapus karena setelah analisis, lokasi sudah dianggap terlalu banyak kategorinya dan tidak dapat diolah dengan cara yang sesuai dalam model.
 
    - **Mengonversi Kolom `price`, `listing-floorarea`, dan `listing-floorarea 2` ke Format Numerik**:
      Kolom-kolom ini awalnya berada dalam format string dan perlu diubah menjadi tipe data numerik untuk melakukan analisis lebih lanjut. Proses ini melibatkan:
@@ -138,9 +142,15 @@ Data preparation adalah tahapan penting yang memastikan bahwa data yang digunaka
    - **Membuat Fitur Tambahan**:
      Salah satu tahapan penting dalam data preparation adalah membuat fitur tambahan yang dapat memberikan informasi lebih bagi model. Dalam kasus ini, fitur tambahan yang relevan dapat dibuat dengan menggabungkan kolom `listing-floorarea` dan `listing-floorarea 2` untuk menghasilkan **total luas lantai** (total floor area). Dengan mengkombinasikan kedua kolom tersebut, model dapat memiliki informasi yang lebih lengkap mengenai luas properti yang ditawarkan.
      - Kolom `listing-floorarea` dan `listing-floorarea 2` memiliki satuan yang berbeda, oleh karena itu konversi satuan perlu dilakukan terlebih dahulu untuk memastikan keselarasan.
-   
+
+   - **Handling Outliers**:
+     Data ini juga mengandung beberapa outliers yang dapat mempengaruhi performa model. Outliers pada kolom `price` dan `listing-floorarea` diidentifikasi dan dihapus untuk menjaga agar data yang digunakan lebih representatif dan tidak terdistorsi oleh nilai-nilai yang sangat berbeda dari mayoritas data lainnya.
+
+   - **Polynomial Features**:
+     Untuk menangkap hubungan non-linear antar fitur, dilakukan penambahan fitur polinomial pada beberapa kolom, seperti `bed` dan `bath`. Penggunaan polynomial features ini membantu model menangkap pola yang lebih kompleks dalam hubungan antar fitur-fitur numerik.
+
    - **Fitur Kategorikal**:
-     Kolom `listing-location` adalah fitur kategorikal yang menunjukkan lokasi properti. Fitur kategorikal seperti ini perlu diproses dengan teknik encoding (seperti One-Hot Encoding atau Label Encoding) untuk mengubahnya menjadi format numerik yang dapat dipahami oleh model machine learning.
+     Kolom `listing-location` adalah fitur kategorikal yang menunjukkan lokasi properti. Fitur kategorikal seperti ini diproses dengan teknik encoding, yaitu **One-Hot Encoding**, untuk mengubahnya menjadi format numerik yang dapat dipahami oleh model machine learning.
 
 ### 3. **Normalisasi Data**:
    - **Skalasi atau Normalisasi Fitur Numerik**:
@@ -149,7 +159,7 @@ Data preparation adalah tahapan penting yang memastikan bahwa data yang digunaka
      - **Standardization (Z-score Normalization)**: Teknik ini mengubah fitur menjadi distribusi dengan rata-rata 0 dan deviasi standar 1. Hal ini bermanfaat ketika data memiliki distribusi yang tidak teratur atau pencilan.
    
    - **Penerapan Skalasi**: 
-     Fitur numerik seperti `bed`, `bath`, dan `listing-floorarea` akan distandarisasi menggunakan salah satu metode di atas. Proses ini juga memastikan bahwa perbedaan besar dalam skala antara fitur tidak mempengaruhi performa model.
+     Fitur numerik seperti `bed`, `bath`, dan `listing-floorarea` distandarisasi menggunakan salah satu metode di atas. Proses ini juga memastikan bahwa perbedaan besar dalam skala antara fitur tidak mempengaruhi performa model.
 
 ### 4. **Pemisahan Data untuk Pelatihan dan Pengujian**:
    Setelah data dipersiapkan, langkah selanjutnya adalah membagi dataset menjadi dua bagian utama:
@@ -163,10 +173,9 @@ Data preparation adalah tahapan penting yang memastikan bahwa data yang digunaka
 Model yang diterapkan pada proyek ini adalah:
 1. **Regresi Linier**: Digunakan untuk memodelkan hubungan linear antara fitur dan harga rumah.
 2. **Random Forest Regressor**: Algoritma ensemble yang digunakan untuk menangani data yang lebih kompleks dan non-linear.
-3. **Gradient Boosting Machine (GBM)**: Digunakan untuk meningkatkan performa model dengan cara menggabungkan beberapa pohon keputusan secara bertahap.
 
 ### Hyperparameter Tuning
-Hyperparameter tuning dilakukan menggunakan teknik Grid Search untuk mencari parameter terbaik bagi Random Forest dan GBM, seperti jumlah pohon (`n_estimators`) dan kedalaman pohon (`max_depth`).
+Hyperparameter tuning dilakukan menggunakan teknik Grid Search untuk mencari parameter terbaik bagi Random Forest, seperti jumlah pohon (`n_estimators`) dan kedalaman pohon (`max_depth`).
 
 Model terbaik yang dipilih adalah **Random Forest Regressor** karena menghasilkan performa yang lebih stabil dan akurat dibandingkan dengan model regresi linier.
 
@@ -184,20 +193,21 @@ Metrik evaluasi yang digunakan dalam proyek ini adalah:
 
 ### Hasil Evaluasi:
 
-![image](https://github.com/user-attachments/assets/018cc107-4c9f-42c5-9b28-b71fa63996ab)
+![image](https://github.com/user-attachments/assets/27bbb427-1258-44bc-9db0-7fce84dcbe6f)
 
 
-**Model: Linear Regression**
-- **R-squared**: 0.752
-- **RMSE**: 890.85 juta IDR
-- **MAE**: 619.97 juta IDR
+### **Hasil Evaluasi Model**
+Berdasarkan hasil evaluasi, berikut adalah perbandingan antara berbagai model yang telah dicoba:
 
-**Model: Random Forest Regressor**
-- **R-squared**: 0.864
-- **RMSE**: 659.41 juta IDR
-- **MAE**: 340.30 juta IDR
+1. **Linear Regression**: Memiliki nilai **R-squared** 0.752 dengan **RMSE** 890.85 juta IDR dan **MAE** 619.97 juta IDR. Meskipun cukup baik, model ini menunjukkan hasil yang kurang optimal dibandingkan dengan model lain.
 
-Berdasarkan hasil evaluasi, **Random Forest Regressor** menunjukkan performa yang lebih baik dibandingkan dengan **Linear Regression**, dengan nilai **R-squared** yang lebih tinggi (0.864 vs. 0.752) dan kesalahan prediksi yang lebih rendah (RMSE: 659.41 juta IDR vs. 890.85 juta IDR, MAE: 340.30 juta IDR vs. 619.97 juta IDR).
+2. **Random Forest Regressor**: Menunjukkan performa terbaik dengan **R-squared** 0.864, **RMSE** 659.41 juta IDR, dan **MAE** 340.30 juta IDR. Model ini berhasil memberikan prediksi dengan kesalahan yang lebih rendah, menjadikannya sebagai pilihan terbaik.
+
+3. **Gradient Boosting Regressor**: Memiliki **R-squared** 0.798, **RMSE** 803.89 juta IDR, dan **MAE** 532.37 juta IDR. Meskipun lebih baik dari Linear Regression, hasilnya masih kurang optimal dibandingkan dengan Random Forest.
+
+4. **Neural Networks**: Hasil dari model Neural Networks menunjukkan performa yang jauh lebih buruk dengan **R-squared** hanya 0.281, **RMSE** 1.52 Miliar IDR, dan **MAE** 1.13 Miliar IDR. Model ini gagal dalam memberikan prediksi yang akurat untuk dataset ini.
+
+Dari berbagai algoritma yang diuji, **Random Forest Regressor** muncul sebagai model terbaik berdasarkan hasil evaluasi. Dengan **R-squared** tertinggi (0.864) dan kesalahan prediksi yang lebih rendah (RMSE dan MAE), model ini diharapkan memberikan hasil prediksi yang lebih andal dan akurat untuk permasalahan prediksi harga properti dalam dataset ini.
 
 #### Linear Regression
 ![image](https://github.com/user-attachments/assets/72869c76-814a-46d6-af0c-52c4d31c8254)
